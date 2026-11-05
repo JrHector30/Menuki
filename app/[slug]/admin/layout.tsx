@@ -137,6 +137,20 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
         </div>
       </header>
 
+      {/* Suspended Membership Alert Banner */}
+      {!store.is_active && (
+        <div className="border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-900 shadow-sm">
+          <div className="mx-auto flex max-w-5xl items-center gap-3">
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-amber-200 text-xs font-bold text-amber-900">
+              !
+            </span>
+            <p className="text-xs font-medium sm:text-sm">
+              <strong className="font-semibold">Membresía suspendida:</strong> El catálogo público de tu local está temporalmente desactivado y no puede recibir pedidos. Comunícate con la administración de Menuki para renovar tu suscripción y reactivarlo.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Main Content Area */}
       <main className="mx-auto max-w-5xl px-4 py-6 sm:px-6">{children}</main>
 

@@ -133,10 +133,10 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResp
   try {
     const supabaseAdmin = createAdminClient();
 
-    // 3. Verify store is open
+    // 3. Verify store is active and open
     const { data: store, error: storeError } = await supabaseAdmin
       .from('stores')
-      .select('is_open_manual')
+      .select('is_open_manual, is_active')
       .eq('id', store_id)
       .maybeSingle();
 
@@ -145,6 +145,14 @@ export async function placeOrder(input: PlaceOrderInput): Promise<PlaceOrderResp
         ok: false,
         kind: 'business',
         error: 'El local solicitado no se encuentra disponible.',
+      };
+    }
+
+    if (!store.is_active) {
+      return {
+        ok: false,
+        kind: 'business',
+        error: 'Este local se encuentra inactivo por falta de membresía. No es posible realizar pedidos.',
       };
     }
 

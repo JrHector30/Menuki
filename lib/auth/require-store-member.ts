@@ -1,6 +1,8 @@
 import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
+import { isSuperadmin } from '@/lib/auth/is-superadmin';
 import type { Database } from '@/types/database';
 
 export type StoreRow = Database['public']['Tables']['stores']['Row'];
@@ -54,13 +56,35 @@ export const requireStoreMember = cache(
       throw new Error(`Tienda no encontrada: ${slug}`);
     }
 
-    // 3. Verify membership
+    // 3. Verify membership or grant superadmin ownership
     const { data: membership, error: memError } = await supabase
       .from('store_members')
       .select('role')
       .eq('store_id', store.id)
       .eq('user_id', user.id)
       .maybeSingle();
+
+    if (isSuperadmin(user)) {
+      if (!membership) {
+        // Link superadmin in store_members so database RLS allows store alterations
+        const adminClient = createAdminClient();
+        await adminClient
+          .from('store_members')
+          .upsert(
+            { store_id: store.id, user_id: user.id, role: 'owner' },
+            { onConflict: 'store_id,user_id' }
+          );
+      }
+
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+        },
+        store,
+        role: 'owner',
+      };
+    }
 
     if (memError || !membership) {
       throw new UnauthorizedError();

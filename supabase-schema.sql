@@ -179,6 +179,11 @@ declare
   v_total numeric(10,2) := 0.00;
   v_new_order_id uuid;
 begin
+  -- 0. Check store active status (membership suspension)
+  if not exists (select 1 from public.stores where id = p_store_id and is_active = true) then
+    raise exception 'Este local se encuentra inactivo por falta de membresía';
+  end if;
+
   -- 1. Validate customer inputs (lengths & mandatory checks)
   if length(trim(coalesce(p_customer_name, ''))) not between 2 and 80 then
     raise exception 'El nombre del cliente debe tener entre 2 y 80 caracteres';

@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { createClient } from '@/lib/supabase/server';
 import { authLoginLimiter } from '@/lib/rate-limit/rate-limiter';
+import { isSuperadmin } from '@/lib/auth/is-superadmin';
 
 export interface AuthActionState {
   error?: string;
@@ -45,7 +46,7 @@ export async function signInAction(
     return { error: 'Credenciales inválidas. Verifica tus datos e intenta nuevamente.' };
   }
 
-  // Validate `next` destination: only relative path starting with '/', not '//' or '/\'
+  // Validate `next` destination: only relative internal path starting with '/', not '//' or '/\'
   let targetUrl: string | null = null;
   if (
     rawNext &&
@@ -57,16 +58,20 @@ export async function signInAction(
     targetUrl = rawNext;
   }
 
-  // If next is missing or invalid, find the first store where user is a member
+  // If next is missing or invalid, resolve destination based on role and memberships
   if (!targetUrl) {
-    const { data: memberships } = await supabase
-      .from('store_members')
-      .select('stores(slug)')
-      .eq('user_id', authData.user.id)
-      .limit(1);
+    if (isSuperadmin(authData.user)) {
+      targetUrl = '/superadmin';
+    } else {
+      const { data: memberships } = await supabase
+        .from('store_members')
+        .select('stores(slug)')
+        .eq('user_id', authData.user.id)
+        .limit(1);
 
-    const firstStore = memberships?.[0]?.stores as { slug: string } | null;
-    targetUrl = firstStore?.slug ? `/${firstStore.slug}/admin` : '/';
+      const firstStore = memberships?.[0]?.stores as { slug: string } | null;
+      targetUrl = firstStore?.slug ? `/${firstStore.slug}/admin` : '/';
+    }
   }
 
   redirect(targetUrl);

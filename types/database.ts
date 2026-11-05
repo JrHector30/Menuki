@@ -22,6 +22,7 @@ export interface Database {
           accent_color: string;
           opening_hours: Json;
           is_open_manual: boolean;
+          is_active: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -37,6 +38,7 @@ export interface Database {
           accent_color?: string;
           opening_hours?: Json;
           is_open_manual?: boolean;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -52,6 +54,7 @@ export interface Database {
           accent_color?: string;
           opening_hours?: Json;
           is_open_manual?: boolean;
+          is_active?: boolean;
           created_at?: string;
           updated_at?: string;
         };
