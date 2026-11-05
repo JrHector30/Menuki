@@ -47,6 +47,7 @@ create table public.stores (
   accent_color varchar(7) not null default '#0f172a',
   opening_hours jsonb not null default '{}'::jsonb,
   is_open_manual boolean not null default true,
+  is_active boolean not null default true,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
   constraint slug_format check (slug ~* '^[a-z0-9]+(?:-[a-z0-9]+)*$')
