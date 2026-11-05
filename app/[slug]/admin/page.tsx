@@ -25,6 +25,7 @@ export default async function AdminDashboardPage({ params }: AdminDashboardPageP
   const endOfDayIso = `${todayLimaStr}T23:59:59.999-05:00`;
 
   // 2. Fetch today's orders and pending orders in parallel
+  const tQueryStart = performance.now();
   const [todayOrdersRes, pendingCountRes] = await Promise.all([
     supabase
       .from('orders')
@@ -38,6 +39,8 @@ export default async function AdminDashboardPage({ params }: AdminDashboardPageP
       .eq('store_id', store.id)
       .eq('status', 'pending'),
   ]);
+  const tQuery = (performance.now() - tQueryStart).toFixed(1);
+  console.log(`[PERF:admin:dashboard] queryOrders=${tQuery}ms`);
 
   const hasQueryError = !!todayOrdersRes.error || !!pendingCountRes.error;
   const orders = todayOrdersRes.data ?? [];

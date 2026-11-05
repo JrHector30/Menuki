@@ -12,12 +12,15 @@ export default async function AdminOrdersPage({ params }: AdminOrdersPageProps) 
   const supabase = await createClient();
 
   // Fetch last 50 orders
+  const tQueryStart = performance.now();
   const { data: orders } = await supabase
     .from('orders')
     .select('*')
     .eq('store_id', store.id)
     .order('created_at', { ascending: false })
     .limit(50);
+  const tQuery = (performance.now() - tQueryStart).toFixed(1);
+  console.log(`[PERF:admin:pedidos] queryOrders=${tQuery}ms`);
 
   return (
     <div className="space-y-6 pb-20 sm:pb-6">

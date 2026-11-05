@@ -35,6 +35,9 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
+// Only run session refresh middleware on /login and auth entry points.
+// Admin routes (/:slug/admin/*) are authoritatively and securely validated
+// by requireStoreMember in the Server Component layout, eliminating duplicate getUser() calls.
 export const config = {
-  matcher: ['/login', '/:slug/admin/:path*'],
+  matcher: ['/login'],
 };

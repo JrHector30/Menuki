@@ -12,6 +12,7 @@ export default async function AdminProductsPage({ params }: AdminProductsPagePro
   const supabase = await createClient();
 
   // Fetch products and categories subject to authenticated RLS
+  const tQueryStart = performance.now();
   const [categoriesRes, productsRes] = await Promise.all([
     supabase
       .from('categories')
@@ -24,6 +25,8 @@ export default async function AdminProductsPage({ params }: AdminProductsPagePro
       .eq('store_id', store.id)
       .order('name', { ascending: true }),
   ]);
+  const tQuery = (performance.now() - tQueryStart).toFixed(1);
+  console.log(`[PERF:admin:productos] queryProductsAndCategories=${tQuery}ms`);
 
   const categories = categoriesRes.data ?? [];
   const products = productsRes.data ?? [];
