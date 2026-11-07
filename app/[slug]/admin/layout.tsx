@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { Metadata } from 'next';
 import { requireStoreMember, UnauthorizedError } from '@/lib/auth/require-store-member';
+import { isSuperadmin } from '@/lib/auth/is-superadmin';
 import { signOutAction } from '@/app/actions/auth-actions';
 import { hexToRgb } from '@/lib/utils/color';
 
@@ -62,6 +63,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
   }
 
   const { store, role } = memberData;
+  const isUserSuperadmin = memberData.isSuperadmin || isSuperadmin(memberData.user);
   const accentRgb = hexToRgb(store.accent_color || '#E11D48');
 
   return (
@@ -72,7 +74,18 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       {/* Desktop & Tablet Header */}
       <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex min-w-0 items-center gap-4">
+          <div className="flex min-w-0 items-center gap-3">
+            {isUserSuperadmin && (
+              <Link
+                href="/superadmin"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-neutral-800 bg-neutral-900 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-neutral-800 active:scale-95"
+                title="Volver a la lista de locales"
+              >
+                <span>←</span>
+                <span>Locales</span>
+              </Link>
+            )}
+
             <Link href={`/${slug}/admin`} className="group flex min-w-0 items-center gap-2">
               <span className="truncate text-base sm:text-lg font-black tracking-tight text-neutral-900 group-hover:opacity-80">
                 {store.name}
@@ -82,7 +95,7 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
               </span>
             </Link>
 
-            <nav className="hidden items-center gap-1 md:flex">
+            <nav className="hidden items-center gap-1 md:flex ml-2">
               <Link
                 href={`/${slug}/admin`}
                 className="rounded-lg px-3 py-1.5 text-xs font-semibold text-neutral-700 transition hover:bg-neutral-100"
@@ -117,16 +130,6 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            {memberData.isSuperadmin && (
-              <Link
-                href="/superadmin"
-                className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-900 bg-neutral-900 px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-neutral-800 active:scale-95 sm:px-3"
-              >
-                <span>←</span>
-                <span className="hidden sm:inline">Volver a</span>
-                <span>Locales</span>
-              </Link>
-            )}
             <Link
               href={`/${slug}`}
               target="_blank"

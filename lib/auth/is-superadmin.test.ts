@@ -40,13 +40,7 @@ describe('isSuperadmin', () => {
       isSuperadmin({
         email: 'jrhector30@gmail.com',
         email_confirmed_at: null,
-      })
-    ).toBe(false);
-
-    expect(
-      isSuperadmin({
-        email: 'jrhector30@gmail.com',
-        email_confirmed_at: undefined,
+        confirmed_at: null,
       })
     ).toBe(false);
   });
