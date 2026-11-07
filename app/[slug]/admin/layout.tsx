@@ -72,12 +72,12 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
       {/* Desktop & Tablet Header */}
       <header className="sticky top-0 z-40 border-b border-neutral-200 bg-white/95 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 sm:px-6">
-          <div className="flex items-center gap-4">
-            <Link href={`/${slug}/admin`} className="group flex items-center gap-2">
-              <span className="text-lg font-black tracking-tight text-neutral-900 group-hover:opacity-80">
+          <div className="flex min-w-0 items-center gap-4">
+            <Link href={`/${slug}/admin`} className="group flex min-w-0 items-center gap-2">
+              <span className="truncate text-base sm:text-lg font-black tracking-tight text-neutral-900 group-hover:opacity-80">
                 {store.name}
               </span>
-              <span className="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold text-neutral-600">
+              <span className="shrink-0 rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-semibold text-neutral-600">
                 {role.toUpperCase()}
               </span>
             </Link>
@@ -116,7 +116,17 @@ export default async function AdminLayout({ children, params }: AdminLayoutProps
             </nav>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex shrink-0 items-center gap-2">
+            {memberData.isSuperadmin && (
+              <Link
+                href="/superadmin"
+                className="inline-flex items-center gap-1.5 rounded-lg border border-neutral-900 bg-neutral-900 px-2.5 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-neutral-800 active:scale-95 sm:px-3"
+              >
+                <span>←</span>
+                <span className="hidden sm:inline">Volver a</span>
+                <span>Locales</span>
+              </Link>
+            )}
             <Link
               href={`/${slug}`}
               target="_blank"

@@ -15,6 +15,7 @@ export interface RequireStoreMemberResult {
   };
   store: StoreRow;
   role: StoreRole;
+  isSuperadmin: boolean;
 }
 
 export class UnauthorizedError extends Error {
@@ -96,6 +97,7 @@ export const requireStoreMember = cache(
         },
         store,
         role: 'owner',
+        isSuperadmin: true,
       };
     }
 
@@ -110,6 +112,7 @@ export const requireStoreMember = cache(
       },
       store,
       role: membership.role,
+      isSuperadmin: false,
     };
   }
 );
